@@ -1,0 +1,116 @@
+React component lifecycle methods
+****************************************************************
+Props .. 
+when react sees an element as user defined component, it passes JSX attributes to this component as a single object . 
+This object is called Props.
+<welcome name="sara">
+function welcome(props){}
+React components should behave as pure with respect to their props .. i.e props can never be updated in the component
+
+State  
+This is a local copy of data for a component .. this is not accessible to any parent / child directly unlesss passed as props
+Only way to update state is using setState()
+React may batch multiple setState() calls into a single for performance
+Since this.props and this.state may update async , never rely on their values for creaing next state
+ex : this.setState({counter: this.state.counter + this.props.increment}) this might give an incorrect values
+
+To address this, we can use a second form of setState that accepts a function
+This will receive the previous state as first arg and props at the time of update as second arg
+this.setState((state, props) => ({
+    counter : state.counter + props.counter
+}))
+
+***************************************************************
+
+While Mounting
+
+constructor -- getDerivedStateFromProps -- render -- componentDidMount
+// not safe to use componentWillMount .. avoid using this at all
+
+WHile Updating
+
+getDerivedStateFromProps -- shouldComponentUpdate -- render -- getsnapshotbeforeupdate -- componentDidUpdate
+// avoid .. componentwillupdate .. componentwillreceiveprops
+
+while unmounting
+
+componentWillUnmount
+
+*************************************************************
+
+Controlled vs Uncontrolled Component
+
+Controlled component is one that takes its current value through props and notifies changes through callbacks like onchange.
+A paretnt component controls it by handling the callback and managing its own state and passing the new values as props to the 
+controlled component. You could as call this as a dumb component.
+
+A Uncontrolled component is one that stores its own state internally, and you query the DOM using a ref to find its current value 
+when you need it. This is a bit more like a traditional HTML.
+
+***************************************************************
+
+Redux form
+
+
+****************************************************************
+
+Obj based approach vs array based approach
+
+// example to update record inside an array with array based approach
+
+// Array -based
+const streamReducer = (state = [], action) => {
+    switch(action.type){
+        case EDI_STREAM: 
+        return state.map(stream = > {
+            if(stream.id === action.payload.id){
+                return action.payload;
+            }else{
+                return stream;
+            }
+        })
+    }
+}
+
+// obj based
+cons streamReducer = (state = {}, action){
+    switch(action.type){
+        case EDIT_STREAM:
+            const newState = { ...state};//creating a brand new state with all the key value pairs from the earlier state
+            newState[action.payload.id] // property accessor notation = action.payload;
+            return newState;
+
+            /// the above 3 luines can be rewritten as below using key interpolation symtac
+            return {...state, [action.payload.id]: action.payload}
+            // in the above we dont know the key earlier, based on what ever the value is make it a key and assign the value
+    }
+}
+
+// with React-Router, ech component needs to be deisgned to work in isolation(fetch it's own data)
+// i.e if a user goes to particular route while loading the page, it might not have the data from the other component as
+// the otehr component might not be initialised already
+
+
+// Since components are rendered by react-router-dom i.e the componewnt is being rendered by route component
+// if we log props in our componewnt it will habe the following .. history, location, match thesea re all from react-router-dom
+
+
+// PUT VS PATCH
+// With PUT .... when we make a request with particluar id to the api , then it will take all the diff properties in the db and replace with what we have made request
+// this might delete any params that we missed in the request
+
+// With PATCH .. we are going to pass som e properties in the body of request then it will only replace those propertuies
+
+
+// React portals (Modal windows)
+// creating modal windows with react are challenging .. y ???
+// When using modal, it will be depply nested in side the dom of react app.
+// ie. app root .. provider .. app. component .. modal
+// it is hard to maintian the position of modal and z-index.. as if any of the parent's x-index is 0 it won't work
+// so we have a cheat in react by creating the modal as child to the body usng Portal
+
+// A portal helps us to render a modal component .. but not as direct child of the component .. but as child of some other elemnt in our html hierarchy
+
+
+// React Fragments
+// Essentially a JSX loking element that is going to return multiple elemetns with out having to put enclosing element/div
